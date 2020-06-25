@@ -37,12 +37,15 @@ class CourseController extends Controller
         }
 
         $course = new Course;
-
+        $user_token=$request->token;
+        $user =auth("users")->authenticate($user_token);
         $course->course_id = $request->course_id;
         $course->course_name = $request->course_name;
         $course->course_code = $request->course_code;
      
-       
+        $user_token=$request->token;
+        $user =auth("users")->authenticate($user_token);
+        
         if($course->save()){
             return response()->json(['success'=>"course created successfully !"], 200);
         }else{

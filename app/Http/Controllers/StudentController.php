@@ -25,31 +25,38 @@ class StudentController extends Controller
      */
     public function create(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'student_id' => 'required|integer',
-            'student_name' => 'required|string',
-            'student_email'=>'required|email',
-            'student_mobile'   => 'required|max:15',
-        
-        ]);
-        
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
 
-        $student = new Student;
+      
+            $validator = Validator::make($request->all(), [
+                'student_id' => 'required|integer',
+                'student_name' => 'required|string',
+                'student_email'=>'required|email',
+                'student_mobile'   => 'required|max:15',
+            
+            ]);
+            
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+    
+            }
+            
+            $student = new Student;
+                // $user_token=$request->token;
+                // $student =auth("users")->authenticate($user_token);
 
-        $student->student_id = $request->student_id;
-        $student->student_name = $request->student_name;
-        $student->student_email = $request->student_email;
-        $student->student_mobile = $request->student_mobile;
+            $student->student_id = $request->student_id;
+            $student->student_name = $request->student_name;
+            $student->student_email = $request->student_email;
+            $student->student_mobile = $request->student_mobile;
+           
+            if($student->save()){
+                return response()->json(['success'=>"student created successfully !"], 200);
+            }else{
+                return response()->json(['error'=>"student creation unsuccessful !"], 400);
+            }
+    
+        
        
-        if($student->save()){
-            return response()->json(['success'=>"student created successfully !"], 200);
-        }else{
-            return response()->json(['error'=>"student creation unsuccessful !"], 400);
-        }
-
     }
 
     /**
@@ -60,11 +67,20 @@ class StudentController extends Controller
      */
     public function GetAllStudent()
     {
-       
+
         $allstudent = DB::table('students')->get();
         if($allstudent) return response()->json($allstudent, 200);
 
         return response()->json(['error'=>"No user found !"], 400);
+
+      
+    //   $token = $allstudent = DB::table('oauth_access_tokens')->find($request->auth);
+     
+    //     if ($token) {
+    //         return response()->json(['error'=> array(DB::table('students')->get())], 400);
+    //     } else {
+    //         return response()->json(['error'=>"No user found !"], 400);
+    //     }
     }
 
     /**

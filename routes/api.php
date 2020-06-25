@@ -18,9 +18,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::post('/register', 'AuthController@register');
 Route::post('/login', 'AuthController@login');
-Route::post('/student','StudentController@create');
+
+Route::middleware('auth:api')->group( function () {
+
+ Route::post('/student','StudentController@create');
 Route::get('/allstudent','StudentController@GetAllStudent');
 Route::post('/course','CourseController@create');
 Route::get('/allcourse','CourseController@GetAllCourse');
 Route::post('/enrolement', 'EnrolementController@create');
 Route::get('/allenrolement/{id}','EnrolementController@GetAllEnrolement');
+});

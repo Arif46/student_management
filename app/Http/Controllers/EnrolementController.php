@@ -30,9 +30,7 @@ class EnrolementController extends Controller
                
                 'student_id' => 'required|exists:students,student_id', 
                  'course_id' => 'required|exists:courses,course_id'
-               
-               
-             
+                
                ,
             ]);
             
@@ -60,7 +58,10 @@ class EnrolementController extends Controller
      */
     public function GetAllEnrolement($id)
     {
-        $enrolementlist = enrolement::where('id',$id)->get();
+        $enrolementlist = enrolement::where('id',$id)->with('students')->get();
+        // $enrolementlist = enrolement::where('id',$id)->get();
+        // $posts = Enrolement::with('student')->limit(100)->get();
+        // dd($posts);
         return response()->json(['success'=>'enrolementlist sucessfully listed','data' =>$enrolementlist],200); 
     }
 
