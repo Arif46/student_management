@@ -3,19 +3,49 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Course;
+
+use App\Json;
 use Validator;
 use DB;
-class CourseController extends Controller
+class JsonController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    
+//     public function create()
+//  {
+// 			$User = array(
+// 				'name' => 'Arif',
+// 				'age' => 20,
+// 			);
+
+// 			$Article = new Article();
+// 			$Article->data = json_encode($User);
+// 			$Article->save();
+//       return response()->json(['success' => 'success'], 200); 
+//     }
+    public function create(Request $request)
     {
-        //
+
+
+        $json = new Json;
+        $data = array(
+            				'name' => $request->name,
+            				'age' => $request->age,
+                        );
+                        
+        $json->name = $request->name;
+        $json->propertise = json_encode($data); 
+
+        if($json->save()){
+            return response()->json(['success'=>"json created successfully !"], 200);
+        }else{
+            return response()->json(['error'=>"json creation unsuccessful !"], 400);
+        }
+ 
     }
 
     /**
@@ -23,36 +53,10 @@ class CourseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'course_id' => 'required|integer',
-            'course_name' => 'required|string',
-            'course_code'=>'required|string',
-            
-        ]);
-        
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        $course = new Course;
-        // $user_token=$request->token;
-        // $user =auth("users")->authenticate($user_token);
-        $course->course_id = $request->course_id;
-        $course->course_name = $request->course_name;
-        $course->course_code = $request->course_code;
-     
-        // $user_token=$request->token;
-        // $user =auth("users")->authenticate($user_token);
-        
-        if($course->save()){
-            return response()->json(['success'=>"course created successfully !"], 200);
-        }else{
-            return response()->json(['error'=>"course creation unsuccessful !"], 400);
-        }
-
-    }
+    // public function create()
+    // {
+    //     //
+    // }
 
     /**
      * Store a newly created resource in storage.
@@ -60,10 +64,10 @@ class CourseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function GetAllCourse()
+    public function GetAlljsondata()
     {
-        $allcourse = DB::table('courses')->get();
-        if($allcourse) return response()->json($allcourse, 200);
+        $alljson = DB::table('jsons')->get();
+        if($alljson) return response()->json($alljson, 200);
 
         return response()->json(['error'=>"No user found !"], 400);
     }

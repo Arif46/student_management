@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Student;
 use Validator;
 use DB;
+use Image;
 class StudentController extends Controller
 {
     /**
@@ -32,6 +33,7 @@ class StudentController extends Controller
                 'student_name' => 'required|string',
                 'student_email'=>'required|email',
                 'student_mobile'   => 'required|max:15',
+                'student_image'=>'required|image|mimes:jpg,png,jpeg|max:5000',
             
             ]);
             
@@ -41,14 +43,35 @@ class StudentController extends Controller
             }
             
             $student = new Student;
-                // $user_token=$request->token;
-                // $student =auth("users")->authenticate($user_token);
-
+            $imageNames = "";
             $student->student_id = $request->student_id;
             $student->student_name = $request->student_name;
             $student->student_email = $request->student_email;
             $student->student_mobile = $request->student_mobile;
-           
+
+            if($file = $request->file("student_image")){
+                $images = Image::canvas(600, 600, '#fff');
+                $image  = Image::make($file->getRealPath())->resize(600, 600, function($constraint){
+                    $constraint->aspectRatio();
+                });
+                $images->insert($image, 'center');
+                $pathImage = date("Y") . '/' . date("m") . '/'.'images/';
+                $pathImg = 'studentImages/'.date("Y") . '/' . date("m") . '/'.'images/';;
+                $nameReplacer = time().'-'.uniqid(). '.' . $file->getClientOriginalExtension();
+                if (!file_exists($pathImg)){
+                    mkdir($pathImg, 0777, true);
+                    $imageNames  = $pathImage.$nameReplacer;
+                    $images->save('studentImages/'.$pathImage.$nameReplacer);
+                }
+                else{
+                    $imageNames  = $pathImage.$nameReplacer;
+                    $images->save('studentImages/'.$pathImage.$nameReplacer);
+                }         
+             $student->student_image = $imageNames;
+        }  
+        
+  
+
             if($student->save()){
                 return response()->json(['success'=>"student created successfully !"], 200);
             }else{
@@ -89,10 +112,57 @@ class StudentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function UpdateStudentData(Request $request , $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'student_id' => 'required|integer',
+            'student_name' => 'required|string',
+            'student_email'=>'required|email',
+            'student_mobile'   => 'required|max:15',
+            'student_image'=>'required|image|mimes:jpg,png,jpeg|max:5000',
+            
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $studentUpdate = new Student;
+
+        $studentUpdate = Student::find($request->id);
+        $studentUpdate->student_id = $request->student_id;
+        $studentUpdate->student_name = $request->student_name;
+        $studentUpdate->student_email = $request->student_email;
+        $studentUpdate->student_mobile = $request->student_mobile;
+
+        if($file = $request->file("student_image")){
+            $images = Image::canvas(600, 600, '#fff');
+            $image  = Image::make($file->getRealPath())->resize(600, 600, function($constraint){
+                $constraint->aspectRatio();
+            });
+            $images->insert($image, 'center');
+            $pathImage = date("Y") . '/' . date("m") . '/'.'images/';
+            $pathImg = 'studentImages/'.date("Y") . '/' . date("m") . '/'.'images/';;
+            $nameReplacer = time().'-'.uniqid(). '.' . $file->getClientOriginalExtension();
+            if (!file_exists($pathImg)){
+                mkdir($pathImg, 0777, true);
+                $imageNames  = $pathImage.$nameReplacer;
+                $images->save('studentImages/'.$pathImage.$nameReplacer);
+            }
+            else{
+                $imageNames  = $pathImage.$nameReplacer;
+                $images->save('studentImages/'.$pathImage.$nameReplacer);
+            }         
+         $studentUpdate->student_image = $imageNames;
     }
+
+        if($studentUpdate->save()){
+            return response()->json(['success'=>'Sucessfully student information updated!'],200);
+        }
+        return response()->json(['error'=>'Something went wrong !'],400);
+    }
+        
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -100,9 +170,14 @@ class StudentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function DeleteStudent($id)
     {
-        //
+        $delete = Student::where('id',$id)->delete();
+        if($delete){
+         return response()->json(['success'=>'student information delete successfully'],200); 
+        }else{
+         return response()->json(['error'=>"Lecture data AllReady deleted !"], 400); 
+        }
     }
 
     /**

@@ -17,4 +17,8 @@ class Enrolement extends Model
     public function students(){
         return $this->hasMany('App\Student','student_id','student_id');
     }
+    public function courses()
+    {
+        return $this->hasOne('App\Course','course_id','course_id'); 
+    }
 }

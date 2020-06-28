@@ -58,7 +58,7 @@ class EnrolementController extends Controller
      */
     public function GetAllEnrolement($id)
     {
-        $enrolementlist = enrolement::where('id',$id)->with('students')->get();
+        $enrolementlist = enrolement::where('id',$id)->with('students')->with('courses')->get();
         // $enrolementlist = enrolement::where('id',$id)->get();
         // $posts = Enrolement::with('student')->limit(100)->get();
         // dd($posts);
